@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Register extends AppCompatActivity {
-    EditText fullName,email,password,phone;
+    EditText fullName,email,password,phone, skillSet;
     Button registerBtn,goToLogin;
     boolean valid = true;
     FirebaseAuth fAuth;
@@ -47,6 +47,7 @@ public class Register extends AppCompatActivity {
         goToLogin = findViewById(R.id.gotoLogin);
         isTutorBox= findViewById(R.id.isTutor);
         isStudentBox= findViewById(R.id.isStudent);
+        skillSet=findViewById(R.id.skillSet);
 
         //checkbox logic
         isStudentBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -75,7 +76,7 @@ public class Register extends AppCompatActivity {
                 checkField(phone);
 
                 //checkbox validation
-                if(!(isStudentBox.isChecked()||isTutorBox.isChecked())){
+                if(!(isStudentBox.isChecked()||isTutorBox.isChecked())) {
                     Toast.makeText(Register.this, "Select the Account", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -92,6 +93,7 @@ public class Register extends AppCompatActivity {
                             userInfo.put("FullName",fullName.getText().toString());
                             userInfo.put("UserEmail",email.getText().toString());
                             userInfo.put("PhoneNumber",phone.getText().toString());
+                            userInfo.put("SkillSet",skillSet.getText().toString());
                             //specify if the user is admin
                             //userInfo.put("isAdmin", "0");
                             //userInfo.put("isUser", "1");
@@ -104,11 +106,11 @@ public class Register extends AppCompatActivity {
                             }
                             df.set(userInfo);
                             if(isTutorBox.isChecked()){
-                                startActivity(new Intent(getApplicationContext(),AdminActivity.class));
+                                startActivity(new Intent(getApplicationContext(), TutorProfile.class));
                                 finish();
                             }
                             if(isStudentBox.isChecked()){
-                                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                                startActivity(new Intent(getApplicationContext(), StudentActivity.class));
                                 finish();
                             }
                         }
