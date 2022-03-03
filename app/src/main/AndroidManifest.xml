@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.usiupeertutor">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -9,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EditTutorProfile"></activity>
+        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".TutorActivity" />
+        <activity android:name=".EditTutorProfile" />
         <activity android:name=".EditStudentProfile" />
         <activity android:name=".LandingPage">
             <intent-filter>
