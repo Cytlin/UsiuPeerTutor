@@ -18,11 +18,11 @@
         android:gravity="center_horizontal">
 
 
-        <ListView
+        <TextView
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/usersList"/>
-
+            android:text="You are a student" />
     </LinearLayout>
     <!--this the navigation view which draws
         and shows the navigation drawer-->

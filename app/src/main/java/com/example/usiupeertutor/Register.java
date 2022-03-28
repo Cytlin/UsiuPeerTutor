@@ -12,11 +12,15 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -30,6 +34,11 @@ public class Register extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     CheckBox isTutorBox, isStudentBox;
+    String userId;
+    FirebaseUser user;
+    //realtime
+    FirebaseDatabase database;
+    DatabaseReference myref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +47,12 @@ public class Register extends AppCompatActivity {
 
         fAuth= FirebaseAuth.getInstance();
         fStore= FirebaseFirestore.getInstance();
+        userId= fAuth.getCurrentUser().getUid();
+        user = fAuth.getCurrentUser();
+
+        //realtime
+        database= FirebaseDatabase.getInstance();
+        myref= database.getReference();
 
         fullName = findViewById(R.id.registerName);
         email = findViewById(R.id.registerEmail);
@@ -98,6 +113,8 @@ public class Register extends AppCompatActivity {
                             //userInfo.put("isAdmin", "0");
                             //userInfo.put("isUser", "1");
 
+
+
                             if(isTutorBox.isChecked()){
                                 userInfo.put("isTutor","1");
                             }
@@ -105,6 +122,25 @@ public class Register extends AppCompatActivity {
                                 userInfo.put("isStudent", "1");
                             }
                             df.set(userInfo);
+
+                            //Save to realtime
+                            String userName=fullName.getText().toString();
+                            String userEmail=email.getText().toString();
+                            String userPhone=phone.getText().toString();
+                            String userSkillSet=skillSet.getText().toString();
+                            //.child(user.getUid())
+                            myref.child("Users").child(userId).setValue(userName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Toast.makeText(Register.this, "Saved to realtime successfully", Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        Toast.makeText(Register.this, "Saved to realtime failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+
                             if(isTutorBox.isChecked()){
                                 startActivity(new Intent(getApplicationContext(), TutorProfile.class));
                                 finish();

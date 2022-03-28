@@ -44,10 +44,11 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.cedarsoftware:json-io:4.10.1'
     implementation 'com.android.volley:volley:1.1.0'
-    implementation 'org.json:json:20141113'
+    //implementation 'org.json:json:20141113'
     implementation 'com.google.firebase:firebase-core:9.4.0'
-    implementation 'com.google.firebase:firebase-database:9.4.0'
-
+    implementation 'com.google.firebase:firebase-database:20.0.4'
+    implementation 'com.firebase:firebase-client-android:2.5.2+'
+    implementation 'com.android.volley:volley:1.1.0'
 
 
 }

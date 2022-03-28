@@ -47,6 +47,7 @@ import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,10 +61,8 @@ public class StudentActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
     NavigationView nav_view;
+    TextView textView2;
 
-
-    ListView usersLV;
-    ArrayList<DataModal> dataModalArrayList;
     FirebaseFirestore db;
 
 
@@ -75,10 +74,12 @@ public class StudentActivity extends AppCompatActivity {
         fAuth= FirebaseAuth.getInstance();
         fStore= FirebaseFirestore.getInstance();
 
+        // below line is use to initialize our variables
         // drawer layout instance to toggle the menu icon to open
         // drawer and back button to close drawer
         drawerLayout= findViewById(R.id.my_drawer_layout);
         nav_view=findViewById(R.id.nav_view);
+        textView2 = findViewById(R.id.textView2);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
 
         // pass the Open and Close toggle for the drawer layout listener
@@ -92,65 +93,11 @@ public class StudentActivity extends AppCompatActivity {
         userId= fAuth.getCurrentUser().getUid();
          user = fAuth.getCurrentUser();
 
-
-        // below line is use to initialize our variables
-        usersLV = findViewById(R.id.usersList);
-        dataModalArrayList = new ArrayList<>();
-
         // initializing our variable for firebase
         // firestore and getting its instance.
         db = FirebaseFirestore.getInstance();
 
-        // here we are calling a method
-        // to load data in our list view.
-        loadDatainListview();
-
-
 }
-
-    private void loadDatainListview() {
-        // below line is use to get data from Firebase
-        // firestore using collection in android.
-        db.collection("Users").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        // after getting the data we are calling on success method
-                        // and inside this method we are checking if the received
-                        // query snapshot is empty or not.
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            // if the snapshot is not empty we are hiding
-                            // our progress bar and adding our data in a list.
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot d : list) {
-                                // after getting this list we are passing
-                                // that list to our object class.
-                                DataModal dataModal = d.toObject(DataModal.class);
-
-                                // after getting data from Firebase we are
-                                // storing that data in our array list
-                                dataModalArrayList.add(dataModal);
-                            }
-                            // after that we are passing our array list to our adapter class.
-                            UsersLVAdapter adapter = new UsersLVAdapter(StudentActivity.this, dataModalArrayList);
-
-                            // after passing this array list to our adapter
-                            // class we are setting our adapter to our list view.
-                            usersLV.setAdapter(adapter);
-                        } else {
-                            // if the snapshot is empty we are displaying a toast message.
-                            Toast.makeText(StudentActivity.this, "No data found in Database", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // we are displaying a toast message
-                // when we get any error from Firebase.
-                Toast.makeText(StudentActivity.this, "Fail to load data..", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
 
     // override the onOptionsItemSelected()
@@ -207,6 +154,12 @@ public class StudentActivity extends AppCompatActivity {
                     });
                     passwordResetDialog.create().show();
                 }
+                if(id==R.id.nav_chat){
+                    Toast.makeText(StudentActivity.this, "Chats", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(),Users.class));
+                    finish();
+                }
+
                 if(id==R.id.nav_logout){
                     Toast.makeText(StudentActivity.this, "Log out", Toast.LENGTH_LONG).show();
                     FirebaseAuth.getInstance().signOut();

@@ -246,6 +246,11 @@ public class EditTutorProfile extends AppCompatActivity {
                     });
                     passwordResetDialog.create().show();
                 }
+                if(id==R.id.nav_chat){
+                    Toast.makeText(EditTutorProfile.this, "Chats", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(),Users.class));
+                    finish();
+                }
                 if(id==R.id.nav_logout){
                     Toast.makeText(EditTutorProfile.this, "Log out", Toast.LENGTH_LONG).show();
                     FirebaseAuth.getInstance().signOut();

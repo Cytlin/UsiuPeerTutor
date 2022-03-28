@@ -240,6 +240,11 @@ public class EditStudentProfile extends AppCompatActivity {
                     });
                     passwordResetDialog.create().show();
                 }
+                if(id==R.id.nav_chat){
+                    Toast.makeText(EditStudentProfile.this, "Chats", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(),Users.class));
+                    finish();
+                }
                 if(id==R.id.nav_logout){
                     Toast.makeText(EditStudentProfile.this, "Log out", Toast.LENGTH_LONG).show();
                     FirebaseAuth.getInstance().signOut();
