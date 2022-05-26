@@ -54,6 +54,17 @@ public class Login extends AppCompatActivity {
                     fAuth.signInWithEmailAndPassword(email.getText().toString(),password.getText().toString()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
+                            //NEW
+                            DocumentReference ref=fStore.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    UserDetails.username= documentSnapshot.getString("FullName");
+                                    UserDetails.skillSet= documentSnapshot.getString("SkillSet");
+
+                                }
+                            });
+
                             Toast.makeText(Login.this, "Loggedin Successfully", Toast.LENGTH_SHORT).show();
                             checkUserAccessLevel(authResult.getUser().getUid());
 
@@ -128,7 +139,12 @@ public class Login extends AppCompatActivity {
                     finish();
                 }
                 if(documentSnapshot.getString("isStudent")!=null){
-                    startActivity(new Intent(getApplicationContext(), StudentActivity.class));
+                    startActivity(new Intent(getApplicationContext(), StudentProfile.class));
+                    overridePendingTransition(0, 0);
+                    finish();
+                }
+                if(documentSnapshot.getString("isAdmin")!=null){
+                    startActivity(new Intent(getApplicationContext(), AdminActivity.class));
                     overridePendingTransition(0, 0);
                     finish();
                 }
@@ -161,6 +177,10 @@ public class Login extends AppCompatActivity {
                     }
                     if(documentSnapshot.getString("isStudent")!=null){
                         startActivity(new Intent(getApplicationContext(), StudentActivity.class));
+                        finish();
+                    }
+                    if(documentSnapshot.getString("isAdmin")!=null){
+                        startActivity(new Intent(getApplicationContext(), AdminActivity.class));
                         finish();
                     }
 

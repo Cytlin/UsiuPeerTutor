@@ -37,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Chat extends AppCompatActivity {
     LinearLayout layout;
@@ -95,12 +96,13 @@ public class Chat extends AppCompatActivity {
                 messageArea.getText().clear();
             }
         });
+
         reference1.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                String message = dataSnapshot.child("message").getValue().toString();
-                String userName = dataSnapshot.child("Users").getValue().toString();
-                String chatwith= dataSnapshot.child("chatwith").getValue().toString();
+            public void onChildAdded(@NonNull com.google.firebase.database.DataSnapshot snapshot, String s) {
+                String message = Objects.requireNonNull(snapshot.child("message").getValue()).toString();
+                String userName = Objects.requireNonNull(snapshot.child("Users").getValue()).toString();
+                String chatwith= Objects.requireNonNull(snapshot.child("chatwith").getValue()).toString();
                 if (userName.equals(UserDetails.username)&&chatwith.equals(UserDetails.chatWith)||userName.equals(UserDetails.chatWith)&&chatwith.equals(UserDetails.username)) {
                     if (userName.equals(UserDetails.username)) {
                         addMessageBox("You:-\n" + message, 1);
@@ -111,22 +113,22 @@ public class Chat extends AppCompatActivity {
             }
 
             @Override
-            public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+            public void onChildChanged(com.google.firebase.database.DataSnapshot snapshot, String s) {
 
             }
 
             @Override
-            public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
+            public void onChildRemoved(com.google.firebase.database.DataSnapshot snapshot) {
 
             }
 
             @Override
-            public void onChildMoved(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+            public void onChildMoved(com.google.firebase.database.DataSnapshot snapshot, String s) {
 
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError error) {
 
             }
         });

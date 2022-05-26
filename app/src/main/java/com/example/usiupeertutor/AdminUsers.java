@@ -3,10 +3,10 @@ package com.example.usiupeertutor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,44 +18,31 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 
-public class Users extends AppCompatActivity {
-    TextView noUsersText;
+public class AdminUsers extends AppCompatActivity {
     ListView usersList;
     ArrayList<String> al = new ArrayList<>();
     int totalUsers = 0;
     ProgressDialog pd;
-    DatabaseReference reff;
-    FirebaseFirestore fstore;
+    //DatabaseReference reff;
+    //FirebaseFirestore fstore;
     //FirebaseUser fire;
     //String uid;
-    ScrollView scrollView;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle actionBarDrawerToggle;
     NavigationView nav_view;
@@ -64,111 +51,93 @@ public class Users extends AppCompatActivity {
     FirebaseUser user;
     String userId;
 
+    DatabaseReference mRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_users);
+        setContentView(R.layout.activity_admin_users);
         fAuth= FirebaseAuth.getInstance();
         fStore= FirebaseFirestore.getInstance();
         userId= fAuth.getCurrentUser().getUid();
         user = fAuth.getCurrentUser();
-        usersList = (ListView)findViewById(R.id.usersList);
-        noUsersText = (TextView)findViewById(R.id.noUsersText);
+        //added this
+        final ArrayAdapter<String> myArrayAdapter= new ArrayAdapter<String>(AdminUsers.this, android.R.layout.simple_list_item_1, al);
 
-        scrollView = (ScrollView)findViewById(R.id.scrollView);
+        usersList = (ListView)findViewById(R.id.usersList);
+
+        //added this
+        usersList.setAdapter(myArrayAdapter);
+
+        mRef = FirebaseDatabase.getInstance().getReference();
+        //mRef = FirebaseDatabase.getInstance().getReference().child("Users").child("");
+        //myref.child("Users").child(userName).setValue(userSkillSet)
+
         drawerLayout = findViewById(R.id.my_drawer_layout);
         nav_view=findViewById(R.id.nav_view);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
-        // pass the Open and Close toggle for the drawer layout listener
-        // to toggle the button
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-        // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        pd = new ProgressDialog(Users.this);
-        pd.setMessage("Loading...");
-        pd.show();
+        //pd = new ProgressDialog(Users.this);
+        //pd.setMessage("Loading...");
+        //pd.show();
 
-        String url = "https://usiupeertutor-default-rtdb.firebaseio.com/Users.json";
-
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
+        //STARTED HERE
+        mRef.addChildEventListener(new com.google.firebase.database.ChildEventListener() {
             @Override
-            public void onResponse(String s) {
-                doOnSuccess(s);
+            public void onChildAdded(@NonNull com.google.firebase.database.DataSnapshot snapshot, @Nullable String previousChildName) {
+                String value= snapshot.getValue().toString();
+                al.add(value);
+                myArrayAdapter.notifyDataSetChanged();
             }
-        },new Response.ErrorListener(){
+
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                System.out.println("" + volleyError);
+            public void onChildChanged(@NonNull com.google.firebase.database.DataSnapshot snapshot, @Nullable String previousChildName) {
+                myArrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull com.google.firebase.database.DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
-        RequestQueue rQueue = Volley.newRequestQueue(Users.this);
-        rQueue.add(request);
 
-        usersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                UserDetails.chatWith = al.get(position);
-                startActivity(new Intent(Users.this, Chat.class));
-            }
-        });
     }
-
-    public void doOnSuccess(String s){
-        try {
-            JSONObject obj = new JSONObject(s);
-
-            Iterator i = obj.keys();
-            String key = "";
-
-            while(i.hasNext()){
-                key = i.next().toString();
-
-                if(!key.equals(UserDetails.username)) {
-                    al.add(key);
-                }
-
-                totalUsers++;
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(totalUsers <=1){
-            noUsersText.setVisibility(View.VISIBLE);
-            usersList.setVisibility(View.GONE);
-        }
-        else{
-            noUsersText.setVisibility(View.GONE);
-            usersList.setVisibility(View.VISIBLE);
-            usersList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, al));
-        }
-
-        pd.dismiss();
-    }
-
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id=item.getItemId();
-                if (id == R.id.nav_profile){
-                    Toast.makeText(Users.this, "Your Profile", Toast.LENGTH_LONG).show();
-                    Intent intent1 = new Intent(Users.this, TutorProfile.class);
+                if (id == R.id.nav_users){
+                    Toast.makeText(AdminUsers.this, "Users", Toast.LENGTH_LONG).show();
+                    Intent intent1 = new Intent(AdminUsers.this, AdminUsers.class);
+                    startActivity(intent1);
+                }
+                if (id == R.id.nav_report){
+                    Toast.makeText(AdminUsers.this, "Generating report...", Toast.LENGTH_LONG).show();
+                    Intent intent1 = new Intent(AdminUsers.this, ReportActivity.class);
                     startActivity(intent1);
                 }
                 if (id == R.id.nav_changePass){
-                    Toast.makeText(Users.this, "Change Password", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AdminUsers.this, "Change Password", Toast.LENGTH_LONG).show();
                     //Intent intent1 = new Intent(TuteeActivity.this,TutorActivity.class);
                     //startActivity(intent1);
-                    EditText resetPassword = new EditText(Users.this);
-                    AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(Users.this);
+                    EditText resetPassword = new EditText(AdminUsers.this);
+                    AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(AdminUsers.this);
                     passwordResetDialog.setTitle("Reset Password?");
                     passwordResetDialog.setMessage("Enter your new password ");
                     passwordResetDialog.setView(resetPassword);
@@ -180,12 +149,12 @@ public class Users extends AppCompatActivity {
                             user.updatePassword(newPass).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Toast.makeText(Users.this, "Password Reset Successfully", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AdminUsers.this, "Password Reset Successfully", Toast.LENGTH_SHORT).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(Users.this, "Password Reset Failed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AdminUsers.this, "Password Reset Failed", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
@@ -201,13 +170,9 @@ public class Users extends AppCompatActivity {
                     });
                     passwordResetDialog.create().show();
                 }
-                if(id==R.id.nav_chat){
-                    Toast.makeText(Users.this, "Chats", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(getApplicationContext(),Users.class));
-                    finish();
-                }
+
                 if(id==R.id.nav_logout){
-                    Toast.makeText(Users.this, "Log out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AdminUsers.this, "Log out", Toast.LENGTH_LONG).show();
                     FirebaseAuth.getInstance().signOut();
                     startActivity(new Intent(getApplicationContext(),Login.class));
                     finish();

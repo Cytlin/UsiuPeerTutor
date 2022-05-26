@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -12,7 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Users"></activity>
+        <activity android:name=".UserListActivity"></activity>
+        <activity android:name=".AdminUsers" />
+        <activity android:name=".ReportActivity" />
+        <activity android:name=".AdminActivity" />
+        <activity android:name=".Users" />
         <activity android:name=".Chat" />
         <activity android:name=".TutorActivity" />
         <activity android:name=".EditTutorProfile" />
